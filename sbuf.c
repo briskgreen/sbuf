@@ -1,4 +1,8 @@
 #include "sbuf.h"
+
+#ifdef _WIN32
+int vasprintf(char **strp,const char *fmt,va_list ap);
+#endif
 	
 SBUF *sbuf_new(size_t size)
 {
@@ -13,6 +17,7 @@ SBUF *sbuf_new(size_t size)
 	
 	data->len=0;
 	data->buf=(char *)malloc(size);
+	data->buf[0]='\0';
 	
 	return data;
 }
@@ -248,3 +253,36 @@ bool sbuf_ninsert(SBUF *data,size_t pos,size_t len,const char *fmt,...)
 
 	return true;
 }
+
+#ifdef _WIN32
+int vasprintf(char **strp,const char *fmt,va_list ap)
+{
+        char *res=NULL;
+        int len;
+        static char empty='\0';
+
+        len=vsnprintf(&empty,0,fmt,ap);
+        if(len == -1)
+        {
+                *strp=NULL;
+                return -1;
+        }
+        res=(char *)malloc(sizeof(char)*(len+1));
+        if(res == NULL)
+        {
+                *strp=NULL;
+                return -1;
+        }
+
+        if(vsnprintf(res,len+1,fmt,ap) == -1)
+        {
+                free(res);
+                *strp=NULL;
+                return -1;
+        }
+
+        *strp=res;
+        return len;
+}
+#endif
+
