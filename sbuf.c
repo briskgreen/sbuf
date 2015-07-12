@@ -45,10 +45,13 @@ bool sbuf_append(SBUF *data,const char *fmt,...)
 	//如果当前缓冲区字符串长度加上要追加的字符串大于缓冲区则动态开辟存储空间
 	if(data->size < data->len+size)
 	{
-		data->buf=(char *)realloc(data->buf,data->size+data->len+size+SBUF_BUF);
+		char *p;
+
+		p=(char *)realloc(data->buf,data->size+data->len+size+SBUF_BUF);
 	
-		if(!data->buf) return false;
+		if(!p) return false;
 	
+		data->buf=p;
 		//更新缓冲区大小
 		data->size+=data->len+size+SBUF_BUF;
 	}
@@ -81,9 +84,12 @@ bool sbuf_nappend(SBUF *data,size_t n,const char *fmt,...)
 	
 	if(data->size < data->len+n+1)
 	{
-		data->buf=(char *)realloc(data->buf,data->size+data->len+n+SBUF_BUF+1);
+		char *p;
+
+		p=(char *)realloc(data->buf,data->size+data->len+n+SBUF_BUF+1);
 	
-		if(!data->buf) return false;
+		if(!p) return false;
+		data->buf=p;
 	
 		data->size+=data->len+n+SBUF_BUF+1;
 	}
@@ -106,9 +112,12 @@ bool sbuf_append_str(SBUF *data,const char *s)
 	
 	if(data->size < data->len+size)
 	{
-		data->buf=(char *)realloc(data->buf,data->size+data->len+size+SBUF_BUF);
+		char *p;
+
+		p=(char *)realloc(data->buf,data->size+data->len+size+SBUF_BUF);
 	
-		if(!data->buf) return false;
+		if(!p) return false;
+		data->buf=p;
 		data->size+=data->len+size+SBUF_BUF;
 	}
 	
@@ -123,8 +132,11 @@ bool sbuf_append_chr(SBUF *data,char c)
 	if(!data || !data->buf) return false;
 	if(data->size < data->len+2)
 	{
-		data->buf=(char *)realloc(data->buf,data->size+data->len+SBUF_BUF+2);
-		if(!data->buf) return false;
+		char *p;
+
+		p=(char *)realloc(data->buf,data->size+data->len+SBUF_BUF+2);
+		if(!p) return false;
+		data->buf=p;
 		data->size+=data->len+SBUF_BUF+2;
 	}
 	
