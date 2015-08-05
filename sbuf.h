@@ -40,7 +40,7 @@ bool sbuf_append_str(SBUF *data,const char *s);
 bool sbuf_append_chr(SBUF *data,char c);
 	
 /* 清空缓冲区 */
-void sbuf_resert(SBUF *data);
+void sbuf_reset(SBUF *data);
 
 /* 回退字符串 */
 bool sbuf_back(SBUF *data,size_t len);

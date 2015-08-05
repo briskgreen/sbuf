@@ -147,7 +147,7 @@ bool sbuf_append_chr(SBUF *data,char c)
 	return true;
 }
 	
-void sbuf_resert(SBUF *data)
+void sbuf_reset(SBUF *data)
 {
 	if(!data || !data->buf) return;
 	
