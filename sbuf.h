@@ -8,7 +8,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 	
-#define SBUF_EMPTY(buf) (buf->len?true:false)
+#define SBUF_EMPTY(buf) (buf->len?false:true)
 #define SBUF_BUF data->size*0.2 //缓冲区增长基数
 	
 typedef struct
