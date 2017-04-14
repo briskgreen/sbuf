@@ -25,6 +25,7 @@ SBUF *sbuf_new(size_t size)
 void sbuf_free(SBUF *data)
 {
 	if(!data) return;
+
 	if(data->buf) free(data->buf);
 	free(data);
 }
@@ -264,6 +265,16 @@ bool sbuf_ninsert(SBUF *data,size_t pos,size_t len,const char *fmt,...)
 	free(temp);
 
 	return true;
+}
+
+size_t sbuf_length(SBUF *data)
+{
+	return data == NULL ? 0 : data->len;
+}
+
+char *sbuf_string(SBUF *data)
+{
+	return data == NULL ? NULL : data->buf;
 }
 
 #ifdef _WIN32

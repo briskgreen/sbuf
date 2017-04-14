@@ -63,4 +63,10 @@ bool sbuf_insert(SBUF *data,size_t pos,const char *fmt,...);
 /* 指定位置插入指定数量字符 */
 bool sbuf_ninsert(SBUF *data,size_t pos,size_t len,const char *fmt,...);
 
+/* 返回字符串长度 */
+size_t sbuf_length(SBUF *data);
+
+/* 返回字符串 */
+char *sbuf_string(SBUF *data);
+
 #endif
