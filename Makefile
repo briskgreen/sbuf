@@ -1,13 +1,14 @@
 all:libsbuf.a libsbuf.so
+CFLAGS=-O2 -fPIC
 
 libsbuf.a:sbuf.o
 	ar rcs libsbuf.a sbuf.o
 
 libsbuf.so:sbuf.o
-	gcc -O2 -shared -fPIC -o libsbuf.so sbuf.o
+	gcc -shared $(CFLAGS) -o libsbuf.so sbuf.o
 
 sbuf.o:sbuf.c sbuf.h
-	gcc -O2 -c sbuf.c
+	gcc $(CFLAGS) -c sbuf.c
 
 clean:
 	rm *.o *.a *.so
