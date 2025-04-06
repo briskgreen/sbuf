@@ -7,9 +7,12 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdbool.h>
-	
+#include <ctype.h>
+
 #define SBUF_EMPTY(buf) (buf->len?false:true)
 #define SBUF_BUF data->size*0.2 //缓冲区增长基数
+
+#define sbuf_delete(buf,str) sbuf_replace(buf,str,NULL)
 	
 typedef struct
 {
@@ -68,5 +71,21 @@ size_t sbuf_length(SBUF *data);
 
 /* 返回字符串 */
 char *sbuf_string(SBUF *data);
+
+/* 大小写转换 */
+bool sbuf_tolower(SBUF *data);
+bool sbuf_toupper(SBUF *data);
+
+/* 删除空白符 */
+bool sbuf_ltrim(SBUF *data);
+bool sbuf_rtrim(SBUF *data);
+bool sbuf_trim(SBUF *data);
+
+/* 字符串替换
+ * needle 需要替换的字符串
+ * to 替换后的字符串
+ * 替换所有needle和to
+ */
+bool sbuf_replace(SBUF *data,const char *needle,const char *to);
 
 #endif

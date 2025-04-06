@@ -8,7 +8,7 @@ SBUF *sbuf_new(size_t size)
 {
 	SBUF *data;
 	
-	data=malloc(sizeof(SBUF));
+	data=(SBUF *)malloc(sizeof(SBUF));
 	if(!data) return NULL;
 	
 	if(size) data->size=size;
@@ -189,12 +189,12 @@ bool sbuf_copy(SBUF *to,SBUF *from)
 	if(!from || !from->buf) return false;
 
 	if(!to)
-		to=malloc(sizeof(SBUF));
+		to=(SBUF *)malloc(sizeof(SBUF));
 	if(!to) return false;
 
 	to->size=from->size;
 	to->len=from->len;
-	to->buf=malloc(sizeof(char)*from->size);
+	to->buf=(char *)malloc(sizeof(char)*from->size);
 	if(!to->buf) return false;
 	memcpy(to->buf,from->buf,from->len);
 	
@@ -275,6 +275,149 @@ size_t sbuf_length(SBUF *data)
 char *sbuf_string(SBUF *data)
 {
 	return data == NULL ? NULL : data->buf;
+}
+
+bool sbuf_tolower(SBUF *data)
+{
+	char *buf;
+
+	if(!data || SBUF_EMPTY(data))
+		return false;
+
+	buf=sbuf_string(data);
+	while(*buf != '\0')
+	{
+		if(isascii(*buf) != 0)
+			*buf=tolower(*buf);
+
+		++buf;
+	}
+
+	return true;
+}
+
+bool sbuf_toupper(SBUF *data)
+{
+	char *buf;
+
+	if(!data || SBUF_EMPTY(data))
+		return false;
+
+	buf=sbuf_string(data);
+	while(*buf != '\0')
+	{
+		if(isascii(*buf) != 0)
+			*buf=toupper(*buf);
+
+		++buf;
+	}
+
+	return true;
+}
+
+bool sbuf_ltrim(SBUF *data)
+{
+	char *buf;
+	size_t start=0,end=0;
+
+	if(!data || SBUF_EMPTY(data))
+		return false;
+
+	buf=sbuf_string(data);
+	while(*buf != '\0' && isspace(*buf) != 0)
+		++buf;
+
+	if(*buf == '\0')
+	{
+		sbuf_reset(data);
+		return true;
+	}
+
+	end=buf-data->buf;
+	if(end == 0) return true;
+
+	return sbuf_eraser(data,start,end);
+}
+
+bool sbuf_rtrim(SBUF *data)
+{
+	char *buf;
+	int index;
+
+	if(!data || SBUF_EMPTY(data))
+		return false;
+
+	buf=sbuf_string(data);
+	index=data->len-1;
+
+	while(index >= 0 && isspace(buf[index]) != 0)
+		--index;
+
+	if(index == (int)data->len-1)
+		return true;
+
+	if(index < 0)
+	{
+		data->buf[0]='\0';
+		data->len=0;
+	}
+	else 
+	{
+		data->buf[index+1]='\0';
+		data->len-=(data->len-index-1);
+	}
+
+	return true;
+}
+
+bool sbuf_trim(SBUF *data)
+{
+	if(!sbuf_ltrim(data))
+		return false;
+	if(!sbuf_rtrim(data))
+		return false;
+
+	return true;
+}
+
+bool sbuf_replace(SBUF *data,const char *needle,const char *to)
+{
+	char *p=NULL;
+	char *buf;
+	size_t needle_len;
+	size_t to_len;
+	size_t start,end;
+	int index=0;
+
+	if(!data || SBUF_EMPTY(data) || needle == NULL) return false;
+	if(to != NULL && strcmp(needle,to) == 0)
+		return true;
+
+	to_len=(to==NULL)?0:strlen(to);
+	needle_len=strlen(needle);
+	if(needle_len == 0)
+		return true;
+	buf=sbuf_string(data);
+
+	while((p=strstr(buf+index,needle)) != NULL)
+	{
+		start=p-buf;
+		end=start+needle_len;
+
+		if(!sbuf_eraser(data,start,end)) return false;
+		if(to_len > 0)
+		{
+			if(!sbuf_insert_str(data,start,(char *)to))
+				return false;
+		}
+
+		index=start+to_len;
+
+		if(index+1 >= (int)data->len)
+			break;
+	}
+
+	return true;
 }
 
 #ifdef _WIN32
